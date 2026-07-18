@@ -8,9 +8,31 @@ import inventoryRoutes from "./routes/inventory.routes.js";
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://inventory-management-system-theta-seven.vercel.app",
+];
+
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    origin(origin, callback) {
+      // Allows requests without an Origin header, such as curl.
+      if (!origin) {
+        return callback(null, true);
+      }
+
+      const isAllowed =
+        allowedOrigins.includes(origin) ||
+        /^https:\/\/inventory-management-system-[a-zA-Z0-9-]+\.vercel\.app$/.test(
+          origin
+        );
+
+      if (isAllowed) {
+        return callback(null, true);
+      }
+
+      return callback(new Error(`CORS blocked origin: ${origin}`));
+    },
     credentials: true,
   })
 );
