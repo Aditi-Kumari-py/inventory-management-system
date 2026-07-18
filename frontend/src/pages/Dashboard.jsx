@@ -109,10 +109,23 @@ export default function Dashboard() {
         payload.unit_price = Number(eventForm.unit_price);
       }
 
-      await api.post("/inventory/events", payload);
+      // await api.post("/inventory/events", payload);
+      if (payload.event_type === "purchase") {
+  await api.post("/inventory/purchase", {
+    product_id: payload.product_id,
+    quantity: payload.quantity,
+    unit_price: payload.unit_price,
+  });
+} else {
+  await api.post("/inventory/sale", {
+    product_id: payload.product_id,
+    quantity: payload.quantity,
+  });
+}
 
       setMessage(
-        "Event published to Kafka successfully. Dashboard will refresh automatically."
+        // "Event published to Kafka successfully. Dashboard will refresh automatically."
+        "Event published to Kafka..."
       );
 
       setTimeout(loadDashboard, 1500);
@@ -402,14 +415,14 @@ export default function Dashboard() {
                   ? "Publishing..."
                   : "Publish Event"}
               </button>
-                 <button
+                 {/* <button
   type="button"
   onClick={runSimulator}
   disabled={eventLoading || products.length === 0}
   className="w-full rounded-xl border border-violet-300 bg-violet-50 px-4 py-3 font-semibold text-violet-700 hover:bg-violet-100 disabled:opacity-60"
 >
   Generate 5–10 Dummy Events
-</button>
+</button> */}
             </div>
           </form>
         </section>
